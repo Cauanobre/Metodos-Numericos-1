@@ -1,11 +1,17 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <cmath>
+#include <iomanip>
 
 #include "constants.hpp"
 #include "functions.hpp"
 #include "payload.hpp"
+#include "criterio.hpp"
 
+#include "newton_raphson.hpp"       
+#include "newton_modificado.hpp"     
 
 #include "newton_modificado.hpp"     // minha parte
 #include "secante.hpp"
@@ -38,6 +44,7 @@ int main()
     int n;
     double eps;
 
+    // ---- Entrada: n, a (para cada n) e e ----
     std::cout << "Numero de valores de a (n): ";
     if (!(std::cin >> n) || n <= 0) { std::cerr << "n invalido\n"; return 1; }
 
@@ -51,7 +58,7 @@ int main()
     std::cout << "Precisao e (ex: 1e-4): ";
     if (!(std::cin >> eps) || eps <= 0) { std::cerr << "e invalido\n"; return 1; }
 
-    //  Execução cada a 
+    // ---- Execução dos métodos para cada a ----
     for (int i = 0; i < n; ++i)
     {
         double a = A[i];
