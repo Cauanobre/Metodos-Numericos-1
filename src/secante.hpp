@@ -1,28 +1,41 @@
 #pragma once
 #include <cmath>
 #include <iostream>
+#include "criterio.hpp"
 
-// d_(k+1) = d_k - f(d_k) * (d_k - d_(k-1)) / (f(d_k) - f(d_(k-1)))
-// Nao usa derivada, mas precisa de dois pontos iniciais (d0 e d1)
-Payload secante(func f, double a, double d0, double d1, double epsilon)
+// Secante: d_(k+1) = d_k - f(d_k) * (d_k - d_(k-1)) / (f(d_k) - f(d_(k-1)))
+Payload secante(func f, func /*df*/, double a, double d0, double epsilon)
 {
     Payload p;
-    int num_iterations = 0;
 
     double dant = d0;
-    double d = d1;
+    double d = d0 + PASSO_SECANTE;
     double fant = f(dant, a);
     double fd = f(d, a);
 
-    do
+
+    if (std::abs(fant) < epsilon)
     {
-        // reta secante horizontal (f iguais) nao corta o eixo, entao nao tem como seguir
+        p.insert(Epoch(0, dant, fant, 0.0));
+        return p;
+    }
+
+    // se abs(f(x1)) < E1 ou abs(x1 - x0) < E2 então raiz <- x1; Fim
+    if (parou(fd, std::abs(d - dant), epsilon))
+    {
+        p.insert(Epoch(0, d, fd, std::abs(d - dant)));
+        return p;
+    }
+
+    for (int k = 1; k <= MAX_ITER; ++k)
+    {
+        // reta secante horizontal (f iguais) não corta o eixo: não há como seguir
         double den = fd - fant;
         if (std::abs(den) < TOL_DERIV)
         {
             std::cerr << "secante(): f(d_k) = f(d_k-1) com a = " << a
                       << ", divisao por zero" << std::endl;
-            break;
+            return p;
         }
 
         double dnovo = d - fd * (d - dant) / den;
@@ -30,22 +43,21 @@ Payload secante(func f, double a, double d0, double d1, double epsilon)
         if (!std::isfinite(dnovo))
         {
             std::cerr << "secante(): divergiu" << std::endl;
-            break;
+            return p;
         }
 
-        // guarda o ponto antigo pro proximo passo
+        // guarda o ponto antigo para o próximo passo
         dant = d;
         fant = fd;
         d = dnovo;
         fd = f(d, a);
 
-        num_iterations++;
-        p.insert(Epoch(num_iterations, d, fd, std::abs(d - dant)));
+        double erro = std::abs(d - dant);
+        p.insert(Epoch(k, d, fd, erro));
 
-    } while (std::abs(fd) > epsilon && num_iterations < MAX_ITER);
+        if (parou(fd, erro, epsilon)) return p;   // |f| < ε  ou  |d_k - d_(k-1)| < ε
+    }
 
-    if (num_iterations >= MAX_ITER && std::abs(fd) > epsilon)
-        std::cerr << "secante(): nao convergiu em " << MAX_ITER << " iteracoes" << std::endl;
-
+    std::cerr << "secante(): nao convergiu em " << MAX_ITER << " iteracoes" << std::endl;
     return p;
 }
