@@ -44,6 +44,8 @@ f(d) = a·eᵈ − 4d², pelos métodos de Newton-Raphson, Newton modificado e S
 ```sh
 make            # build de desenvolvimento em bin/main
 make run        # compila e executa dentro de resultados/
+make csv        # roda o programa com vários valores de a e salva os CSVs em resultados/
+make graficos   # make csv + gera os gráficos em graficos/ (precisa de python3 + matplotlib)
 make static     # executável estático para entrega (g++ -static)
 make dist       # gera Equipe_MN1_Tema2.zip: slides + código + executável estático
 make clean
@@ -55,6 +57,36 @@ Teste padrão do enunciado: `n = 1`, `a = 1`, `e = 1e-4` (d₀ = 0,5 fixo no có
 ```sh
 printf "1\n1\n1e-4\n" | ./bin/main
 ```
+
+A entrada aceita vírgula ou ponto como separador decimal (`0,0001` ou `1e-4`).
+
+## Saídas
+
+Além das tabelas no terminal, o programa grava na pasta onde é executado:
+
+| Arquivo | Conteúdo |
+|---|---|
+| `quadro_resposta.csv` | resultado final de cada método para cada a (item e) |
+| `quadro_comparativo.csv` | métodos lado a lado para cada a (item f) |
+| `iteracoes.csv` | todas as iterações de cada método e a (base dos gráficos) |
+
+## Gráficos e análise do item g)
+
+`make graficos` gera em `graficos/`:
+
+| Imagem | O que mostra |
+|---|---|
+| `01_funcao_a1.png` | f(d) com a = 1 e as três raízes |
+| `02_funcao_varios_a.png` | como a desloca a curva e as raízes |
+| `03_convergencia_a1.png` | erro por iteração de cada método (a = 1) |
+| `04_iteracoes_por_a.png` | iterações por valor de a (✕ = não convergiu) |
+| `05_raiz_por_a.png` | raiz encontrada por cada método, por a |
+| `06_quadro_resposta_*.png`, `07_quadro_comparativo_a1.png` | quadros em imagem |
+| `08_limite_seguranca.png` | valor crítico de a em que d chega a 0,7 cm |
+
+O valor crítico vem de f(0,7) = 0: a = 4·0,7² / e^0,7 ≈ 0,9733. Partindo de d₀ = 0,5,
+valores de a abaixo dele dão d ≤ 0,7 cm (seguro) e acima dele o movimento amplifica.
+Os valores de a testados ficam em `VALORES_A`, no makefile.
 
 ## Ideia geral: Epoch e Payload (`src/core/payload.hpp`)
 
