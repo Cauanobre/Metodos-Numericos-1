@@ -9,6 +9,7 @@
 
 #include "core/constants.hpp"
 #include "core/payload.hpp"
+#include "core/criterio.hpp"
 
 // Itens e) e f): quadros construidos a partir dos Payloads dos metodos.
 // Nao recalcula nada: so le o que cada metodo registrou (ultima iteracao de
@@ -21,10 +22,9 @@ struct Execucao {
 
 // ---------- auxiliares ----------
 
-// Mesmo criterio de parada dos metodos: convergiu se |f(d)| <= eps na ultima
-// iteracao
+// Mesmo criterio de parada dos metodos (ver core/criterio.hpp)
 inline bool q_convergiu(const Execucao &e, double eps) {
-  return !e.p.vazio() && std::abs(e.p.ultimo().fd) <= eps;
+  return convergiu_payload(e.p, eps);
 }
 
 // Situacao do resultado frente ao limite do enunciado (d > 0,7 cm amplifica o

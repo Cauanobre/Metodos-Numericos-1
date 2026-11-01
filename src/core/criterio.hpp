@@ -9,9 +9,10 @@ inline bool parou(double fd, double erro, double eps)
     return std::abs(fd) < eps || erro < eps;
 }
  
-// Diz se o metodo encontrou uma raiz: |f(d)| < E na última iteração.
+// Diz se o metodo encontrou uma raiz: a última iteração satisfaz o mesmo
+// critério de parada usado pelos métodos (|f(d)| < E ou |d_k - d_(k-1)| < E).
 inline bool convergiu_payload(const Payload& p, double eps)
 {
     if (p.vazio()) return false;
-    return std::abs(p.ultimo().fd) < eps;
+    return parou(p.ultimo().fd, p.ultimo().erro, eps);
 }
