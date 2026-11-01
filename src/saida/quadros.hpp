@@ -213,6 +213,16 @@ inline void exportar_csv(const std::vector<Execucao> &execs,
     c << "\n";
   }
 
-  std::cout
-      << "\nArquivos gerados: quadro_resposta.csv, quadro_comparativo.csv\n";
+  // iteracoes.csv: todas as iteracoes de cada metodo e a (base para os
+  // graficos de convergencia do item g)
+  std::ofstream it("iteracoes.csv");
+  it << "metodo;a;k;d;f(d);erro\n";
+  for (const Execucao &e : execs)
+    for (const Epoch &ep : e.p.epochs)
+      it << e.metodo << ';' << q_geral(e.a) << ';' << ep.k << ';'
+         << q_cient(ep.d, 10) << ';' << q_cient(ep.fd, 10) << ';'
+         << q_cient(ep.erro, 10) << "\n";
+
+  std::cout << "\nArquivos gerados: quadro_resposta.csv, "
+               "quadro_comparativo.csv, iteracoes.csv\n";
 }
