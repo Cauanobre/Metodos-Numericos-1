@@ -4,7 +4,9 @@ SRC      = src/main.cpp
 BIN      = bin/main
 DIST     = Equipe_MN1_Tema2
 
-.PHONY: all static run clean dist
+VALORES_A = 8\n0.1\n0.5\n1\n1.5\n2\n3\n5\n10\n1e-4\n
+
+.PHONY: all static run clean dist csv graficos
 
 # Build de desenvolvimento (dinâmico)
 all:
@@ -21,8 +23,17 @@ run: all
 	mkdir -p resultados
 	cd resultados && ../$(BIN)
 
+# Roda o programa com vários valores de a (item g) e gera os CSVs em resultados/
+csv: all
+	mkdir -p resultados
+	cd resultados && printf "$(VALORES_A)" | ../$(BIN) > /dev/null
+
+# Gráficos e quadros em imagem (precisa de python3 + matplotlib)
+graficos: csv
+	python3 scripts/graficos.py
+
 clean:
-	rm -rf bin resultados/*.csv $(DIST) $(DIST).zip
+	rm -rf bin resultados/*.csv graficos/*.png $(DIST) $(DIST).zip
 
 # Arquivo compactado final: apresentação, código fonte e executável estático
 dist: static
