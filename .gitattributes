@@ -1,0 +1,3 @@
+# Scripts e makefile sempre com LF, para rodarem no Linux/WSL mesmo após checkout no Windows
+*.sh     text eol=lf
+makefile text eol=lf
