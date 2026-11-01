@@ -19,6 +19,7 @@ struct Epoch
 struct Payload
 {
     std::vector<Epoch> epochs;
+    std::string motivo;   // por que o método parou sem convergir (vazio se convergiu)
 
     void insert(const Epoch& e) { epochs.push_back(e); }
     bool vazio() const { return epochs.empty(); }

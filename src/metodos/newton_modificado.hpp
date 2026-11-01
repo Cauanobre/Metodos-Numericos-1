@@ -25,8 +25,7 @@ Payload newton_modificado(func f, func df, double a, double d0, double epsilon)
     //f'(x0) != 0 
     if (std::abs(dfd0) < TOL_DERIV)
     {
-        std::cerr << "newton_modificado(): f'(x0) = 0 em x0 = " << d0
-                  << " (a = " << a << "), metodo nao pode ser aplicado" << std::endl;
+        p.motivo = "f'(x0) = 0 em x0 = " + std::to_string(d0) + ", metodo nao pode ser aplicado";
         return p;   // Payload vazio é falha
     }
 
@@ -37,7 +36,7 @@ Payload newton_modificado(func f, func df, double a, double d0, double epsilon)
 
         if (!std::isfinite(x1))
         {
-            std::cerr << "newton_modificado(): divergiu" << std::endl;
+            p.motivo = "divergiu (valor nao finito)";
             return p;
         }
 
@@ -49,6 +48,6 @@ Payload newton_modificado(func f, func df, double a, double d0, double epsilon)
         x0 = x1;
     }
 
-    std::cerr << "newton_modificado(): nao convergiu em " << MAX_ITER << " iteracoes" << std::endl;
+    p.motivo = "nao convergiu em " + std::to_string(MAX_ITER) + " iteracoes";
     return p;
 }

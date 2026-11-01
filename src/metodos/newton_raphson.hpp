@@ -25,8 +25,7 @@ Payload newton_raphson(func f, func df, double a, double d0, double epsilon)
         // Derivada nula
         if (std::abs(dfx) < TOL_DERIV)
         {
-            std::cerr << "newton_raphson(): f'(x) = 0 em x = " << x0
-                      << " (a = " << a << "), metodo falhou" << std::endl;
+            p.motivo = "f'(x) = 0 em x = " + std::to_string(x0);
             return p;
         }
 
@@ -34,7 +33,7 @@ Payload newton_raphson(func f, func df, double a, double d0, double epsilon)
 
         if (!std::isfinite(x1))
         {
-            std::cerr << "newton_raphson(): divergiu" << std::endl;
+            p.motivo = "divergiu (valor nao finito)";
             return p;
         }
 
@@ -46,6 +45,6 @@ Payload newton_raphson(func f, func df, double a, double d0, double epsilon)
         x0 = x1;
     }
 
-    std::cerr << "newton_raphson(): nao convergiu em " << MAX_ITER << " iteracoes" << std::endl;
+    p.motivo = "nao convergiu em " + std::to_string(MAX_ITER) + " iteracoes";
     return p;
 }

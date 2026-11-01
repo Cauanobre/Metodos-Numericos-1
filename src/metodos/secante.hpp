@@ -37,8 +37,7 @@ Payload secante(func f, double a, double d0, double d1, double epsilon)
         double den = fd - fant;
         if (std::abs(den) < TOL_DERIV)
         {
-            std::cerr << "secante(): f(d_k) = f(d_k-1) com a = " << a
-                      << ", divisao por zero" << std::endl;
+            p.motivo = "f(d_k) = f(d_k-1), divisao por zero";
             return p;
         }
 
@@ -46,7 +45,7 @@ Payload secante(func f, double a, double d0, double d1, double epsilon)
 
         if (!std::isfinite(dnovo))
         {
-            std::cerr << "secante(): divergiu" << std::endl;
+            p.motivo = "divergiu (valor nao finito)";
             return p;
         }
 
@@ -62,6 +61,6 @@ Payload secante(func f, double a, double d0, double d1, double epsilon)
         if (parou(fd, erro, epsilon)) return p;   // |f| < E  ou  |d_k - d_(k-1)| < E
     }
 
-    std::cerr << "secante(): nao convergiu em " << MAX_ITER << " iteracoes" << std::endl;
+    p.motivo = "nao convergiu em " + std::to_string(MAX_ITER) + " iteracoes";
     return p;
 }

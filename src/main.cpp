@@ -38,7 +38,8 @@ void imprimir_resultado(const std::string& nome, const Payload& p, double eps)
 
     if (p.vazio())
     {
-        std::cout << "Resultado: metodo falhou (sem raiz calculada)\n";
+        std::cout << "Resultado: metodo falhou (sem raiz calculada)"
+                  << (p.motivo.empty() ? "" : ": " + p.motivo) << "\n";
         return;
     }
 
@@ -50,6 +51,9 @@ void imprimir_resultado(const std::string& nome, const Payload& p, double eps)
               << (convergiu ? "convergiu" : "NAO convergiu") << " | "
               << (convergiu ? (u.d > MAX_CM ? "AMPLIFICA (d > 0,7 cm)" : "seguro (d <= 0,7 cm)") : "--")
               << std::endl;
+
+    if (!p.motivo.empty())
+        std::cout << "Motivo: " << p.motivo << std::endl;
 }
 
 // Métodos que recebem (f, df, a, d0, eps): Newton-Raphson e Newton modificado
