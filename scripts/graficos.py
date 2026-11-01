@@ -23,6 +23,11 @@ D0 = 0.5          # aproximação inicial usada no programa
 MAX_CM = 0.7      # acima disso o movimento amplifica
 A_PADRAO = 1.0
 
+# Valor de a em que a raiz vale exatamente 0,7 cm: f(0,7) = 0  =>  a = 4·0,7² / e^0,7
+A_CRITICO = 4 * MAX_CM ** 2 / math.exp(MAX_CM)   # ≈ 0,9733
+# Testes perto de A_CRITICO vão só para o gráfico ampliado (08), para não apertar o 04 e o 05
+JANELA_CRITICA = 0.05
+
 # Uma cor fixa por método, igual em todos os gráficos
 METODOS = {
     "newton_raphson()":    ("Newton-Raphson",    "#2a78d6"),
@@ -203,11 +208,15 @@ def grafico_raiz_por_a(resposta, valores_a):
     desloc = {"newton_raphson()": 0.92, "newton_modificado()": 1.0, "secante()": 1.08}
     for m, (nome, cor) in METODOS.items():
         pts = [(float(r["a"]), numero(r["d"])) for r in resposta
-               if r["metodo"] == m and r["situacao"] not in ("nao convergiu", "falhou")]
+               if r["metodo"] == m and float(r["a"]) in valores_a
+               and r["situacao"] not in ("nao convergiu", "falhou")]
         if pts:
             xs, ys = zip(*pts)
             ax.plot([x * desloc[m] for x in xs], ys, marcadores[m], color=cor, markersize=10, label=nome,
                     markeredgecolor=FUNDO, markeredgewidth=1.5)
+    ax.axvline(A_CRITICO, color=TEXTO_2, linestyle=":", linewidth=1.5)
+    ax.text(A_CRITICO * 0.97, -0.55, f"a crítico ≈ {A_CRITICO:.4f}", color=TEXTO_2,
+            ha="right")
     ax.set_xscale("log")
     ax.set_xticks(valores_a)
     ax.set_xticklabels([f"{a:g}" for a in valores_a])
@@ -216,6 +225,58 @@ def grafico_raiz_por_a(resposta, valores_a):
     ax.set_title("Raiz encontrada por cada método, por valor de a")
     ax.legend(loc="upper right")
     salvar(fig, "05_raiz_por_a.png")
+
+
+# ---------- 8) Limite de segurança: a em que d cruza 0,7 cm ----------
+def raiz_central(a):
+    """Raiz entre 0,3 e 1,5 (a que os métodos encontram partindo de d₀ = 0,5 para a ≈ 1)."""
+    x0, x1 = 0.3, 1.5
+    for _ in range(60):
+        m = (x0 + x1) / 2
+        if f(x0, a) * f(m, a) <= 0:
+            x1 = m
+        else:
+            x0 = m
+    return (x0 + x1) / 2
+
+
+def grafico_limite(resposta, valores_perto):
+    ini, fim = A_CRITICO - 0.06, A_CRITICO + 0.06
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.grid(True, linewidth=0.8)
+
+    # curva exata da raiz em função de a (referência para os pontos dos métodos)
+    xs = [ini + i * (fim - ini) / 300 for i in range(301)]
+    ax.plot(xs, [raiz_central(a) for a in xs], color=TEXTO_2, linewidth=1.2,
+            label="raiz exata")
+
+    ax.axhline(MAX_CM, color="#e34948", linestyle="--", linewidth=1.5)
+    ax.axvline(A_CRITICO, color=TEXTO_2, linestyle=":", linewidth=1.5)
+    ax.annotate(f"a crítico ≈ {A_CRITICO:.4f}", (A_CRITICO, MAX_CM), xytext=(12, -40),
+                textcoords="offset points", color=TEXTO,
+                arrowprops=dict(arrowstyle="-", color=TEXTO_2))
+    ax.text(ini + 0.003, MAX_CM - 0.012, "seguro (d ≤ 0,7 cm)", color=TEXTO_2, va="top")
+    ax.text(ini + 0.003, MAX_CM + 0.004, "amplifica (d > 0,7 cm)", color=TEXTO_2)
+
+    marcadores = {"newton_raphson()": "o", "newton_modificado()": "s", "secante()": "^"}
+    desloc = {"newton_raphson()": -0.0015, "newton_modificado()": 0.0, "secante()": 0.0015}
+    for m, (nome, cor) in METODOS.items():
+        pts = [(float(r["a"]), numero(r["d"])) for r in resposta
+               if r["metodo"] == m and float(r["a"]) in valores_perto
+               and r["situacao"] not in ("nao convergiu", "falhou")]
+        if pts:
+            xs_m, ys_m = zip(*pts)
+            ax.plot([x + desloc[m] for x in xs_m], ys_m, marcadores[m], color=cor,
+                    markersize=10, label=nome, markeredgecolor=FUNDO, markeredgewidth=1.5)
+
+    ax.set_xlim(ini, fim)
+    ax.set_xticks(valores_perto)
+    ax.set_xticklabels([f"{a:g}" for a in valores_perto])
+    ax.set_xlabel("a")
+    ax.set_ylabel("d encontrado (cm)")
+    ax.set_title("Limite de segurança: valor de a em que d chega a 0,7 cm")
+    ax.legend(loc="upper left")
+    salvar(fig, "08_limite_seguranca.png")
 
 
 # ---------- 6) Quadros em imagem (estilo das janelas do exemplo) ----------
@@ -265,8 +326,12 @@ def main():
     os.makedirs(DIR_PNG, exist_ok=True)
     iteracoes = ler_csv("iteracoes.csv")
     resposta = ler_csv("quadro_resposta.csv")
-    valores_a = sorted({float(r["a"]) for r in resposta})
+    todos_a = sorted({float(r["a"]) for r in resposta})
+    # a = 1 (padrão) fica nos dois grupos; o resto perto do a crítico vai só para o 08
+    valores_perto = [a for a in todos_a if abs(a - A_CRITICO) <= JANELA_CRITICA]
+    valores_a = [a for a in todos_a if a not in valores_perto or a == A_PADRAO]
 
+    print(f"a critico (d = 0,7 cm): {A_CRITICO:.6f}")
     grafico_funcao()
     grafico_funcao_varios_a(valores_a)
     if any(float(r["a"]) == A_PADRAO for r in iteracoes):
@@ -274,6 +339,8 @@ def main():
         quadros(iteracoes, resposta)
     grafico_iteracoes_por_a(resposta, valores_a)
     grafico_raiz_por_a(resposta, valores_a)
+    if len(valores_perto) > 1:
+        grafico_limite(resposta, valores_perto)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,9 @@ SRC      = src/main.cpp
 BIN      = bin/main
 DIST     = Equipe_MN1_Tema2
 
-VALORES_A = 8\n0.1\n0.5\n1\n1.5\n2\n3\n5\n10\n1e-4\n
+# n, os valores de a e e: faixa ampla (0,1 a 10) + valores perto do a crítico (~0,9733),
+# onde a raiz cruza o limite de 0,7 cm
+VALORES_A = 12\n0.1\n0.5\n0.93\n0.95\n0.97\n0.98\n1\n1.5\n2\n3\n5\n10\n1e-4\n
 
 .PHONY: all static run clean dist csv graficos
 
