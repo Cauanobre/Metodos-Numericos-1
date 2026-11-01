@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -38,10 +39,16 @@ void print_test_table(const std::string& nome, const Payload& p)
               << std::setw(15) << "f(d)" << std::setw(15) << "erro" << "\n" << linha << "\n";
 
     for (const Epoch& e : p.epochs)
-        std::cout << std::left << std::setw(5) << e.k
-                  << std::fixed << std::setprecision(8) << std::setw(15) << e.d
-                  << std::scientific << std::setprecision(3) << std::setw(15) << e.fd
+    {
+        std::cout << std::left << std::setw(5) << e.k;
+        // valores gigantes (método divergindo) em notação científica para não quebrar a coluna
+        if (std::abs(e.d) >= 1e6)
+            std::cout << std::scientific << std::setprecision(3) << std::setw(15) << e.d;
+        else
+            std::cout << std::fixed << std::setprecision(8) << std::setw(15) << e.d;
+        std::cout << std::scientific << std::setprecision(3) << std::setw(15) << e.fd
                   << std::setw(15) << e.erro << "\n";
+    }
 
     std::cout << linha << std::endl;
     std::cout.copyfmt(formato_original);
