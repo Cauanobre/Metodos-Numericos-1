@@ -1,0 +1,18 @@
+# Executáveis e builds
+bin/
+main
+*.exe
+*.o
+
+# Saídas do programa e do script de gráficos
+resultados/*.csv
+*.csv
+graficos/*.png
+
+# Pacote de entrega (gerado por make dist)
+Equipe_MN1_Tema2/
+*.zip
+
+# Python
+__pycache__/
+.venv/

@@ -4,15 +4,15 @@
 #include <cmath>
 #include <iomanip>
 
-#include "constants.hpp"
-#include "functions.hpp"
-#include "payload.hpp"
-#include "criterio.hpp"
+#include "core/constants.hpp"
+#include "core/functions.hpp"
+#include "core/payload.hpp"
+#include "core/criterio.hpp"
 
-#include "newton_raphson.hpp"       
-#include "newton_modificado.hpp"   
-#include "secante.hpp"                
-#include "quadros.hpp"
+#include "metodos/newton_raphson.hpp"
+#include "metodos/newton_modificado.hpp"
+#include "metodos/secante.hpp"
+#include "saida/quadros.hpp"
 
 // Assinatura comum a Newton-Raphson e Newton modificado
 typedef Payload (*Metodo)(func, func, double, double, double);

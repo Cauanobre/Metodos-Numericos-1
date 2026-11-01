@@ -1,7 +1,9 @@
 #pragma once
 #include <cmath>
 #include <iostream>
-#include "criterio.hpp"
+#include "core/constants.hpp"
+#include "core/functions.hpp"
+#include "core/criterio.hpp"
 
 
 // d_(k+1) = d_k - f(d_k) * (d_k - d_(k-1)) / (f(d_k) - f(d_(k-1)))

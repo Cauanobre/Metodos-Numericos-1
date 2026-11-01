@@ -1,7 +1,9 @@
 #pragma once
 #include <cmath>
 #include <iostream>
-#include "criterio.hpp"
+#include "core/constants.hpp"
+#include "core/functions.hpp"
+#include "core/criterio.hpp"
 
 // Newton modificado: x1 = x0 - f(x0)/f'(x_inicial)
 // A derivada é calculada uma vez, no ponto inicial, e permanece travada.

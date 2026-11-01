@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "constants.hpp"
-#include "payload.hpp"
+#include "core/constants.hpp"
+#include "core/payload.hpp"
 
 // Itens e) e f): quadros construidos a partir dos Payloads dos metodos.
 // Nao recalcula nada: so le o que cada metodo registrou (ultima iteracao de

@@ -1,7 +1,9 @@
 #pragma once
 #include <cmath>
 #include <iostream>
-#include "criterio.hpp"
+#include "core/constants.hpp"
+#include "core/functions.hpp"
+#include "core/criterio.hpp"
 
 //  x1 = x0 - f(x0)/f'(x0)
 Payload newton_raphson(func f, func df, double a, double d0, double epsilon)

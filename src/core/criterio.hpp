@@ -1,6 +1,6 @@
 #pragma once
 #include <cmath>
-#include "payload.hpp"
+#include "core/payload.hpp"
  
 
 //abs(f(x1)) < E1   OU   abs(x1 - x0) < E2   (além do limite de iterações, tratado em cada metodo)
