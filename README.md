@@ -76,6 +76,7 @@ Além das tabelas no terminal, o programa grava na pasta onde é executado:
 
 | Imagem | O que mostra |
 |---|---|
+| `00_funcao_problema.png` | f(d) com a = 1 e as raízes marcadas sem valores (slide do problema) |
 | `01_funcao_a1.png` | f(d) com a = 1 e as três raízes |
 | `02_funcao_varios_a.png` | como a desloca a curva e as raízes |
 | `03_convergencia_a1.png` | erro por iteração de cada método (a = 1) |

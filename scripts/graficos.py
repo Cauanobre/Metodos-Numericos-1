@@ -90,8 +90,9 @@ def salvar(fig, nome):
     print("gerado: graficos/" + nome)
 
 
-# ---------- 1) f(d) com as raízes marcadas (estilo do slide de introdução) ----------
-def grafico_funcao():
+# ---------- 1) f(d) com as raízes marcadas ----------
+# com_valores=False: versão para o slide do problema, sem revelar a resposta
+def grafico_funcao(com_valores=True, nome="01_funcao_a1.png"):
     a = A_PADRAO
     xs = [-1.5 + i * 0.005 for i in range(1301)]
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -105,18 +106,20 @@ def grafico_funcao():
 
     for r in raizes(a):
         ax.plot(r, 0, "o", color="#3b3b3b", markersize=9, zorder=3)
-        ax.annotate(f"Raiz\n({r:.6f}; 0)", (r, 0), xytext=(0, -48),
+        rotulo = f"Raiz\n({r:.6f}; 0)" if com_valores else "raiz"
+        ax.annotate(rotulo, (r, 0), xytext=(0, -48 if com_valores else -32),
                     textcoords="offset points", ha="center",
                     bbox=dict(boxstyle="round", fc="white", ec=GRADE))
     ax.plot(D0, f(D0, a), "o", color=METODOS["newton_raphson()"][1], markersize=9, zorder=3)
-    ax.annotate("d₀ = 0,5", (D0, f(D0, a)), xytext=(-70, 10), textcoords="offset points")
+    ax.annotate("d₀ = 0,5", (D0, f(D0, a)), xytext=(-75, 28), textcoords="offset points",
+                arrowprops=dict(arrowstyle="-", color=TEXTO_2))
 
     ax.set_xlim(-1.5, 5)
     ax.set_ylim(-12, 18)
     ax.set_xlabel("d (cm)")
     ax.set_ylabel("f(d)")
     ax.set_title("f(d) = a·eᵈ − 4d²  com a = 1")
-    salvar(fig, "01_funcao_a1.png")
+    salvar(fig, nome)
 
 
 # ---------- 2) f(d) para vários a: como a desloca as raízes ----------
@@ -333,6 +336,7 @@ def main():
 
     print(f"a critico (d = 0,7 cm): {A_CRITICO:.6f}")
     grafico_funcao()
+    grafico_funcao(com_valores=False, nome="00_funcao_problema.png")
     grafico_funcao_varios_a(valores_a)
     if any(float(r["a"]) == A_PADRAO for r in iteracoes):
         grafico_convergencia(iteracoes)
