@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -13,8 +12,9 @@
 #include "newton_raphson.hpp"       
 #include "newton_modificado.hpp"   
 #include "secante.hpp"                
+#include "quadros.hpp"
 
-// Assinatura comum a todos os métodos
+// Assinatura comum a Newton-Raphson e Newton modificado
 typedef Payload (*Metodo)(func, func, double, double, double);
 
 // Imprime a tabela de iterações e o resumo de um Payload (usado por todos os métodos)
@@ -39,9 +39,11 @@ void imprimir_resultado(const std::string& nome, const Payload& p, double eps)
 }
 
 // Métodos que recebem (f, df, a, d0, eps): Newton-Raphson e Newton modificado
-void executar(const std::string& nome, Metodo metodo, double a, double d0, double eps)
+Payload executar(const std::string& nome, Metodo metodo, double a, double d0, double eps)
 {
-    imprimir_resultado(nome, metodo(&f, &df, a, d0, eps), eps);
+    Payload p = metodo(&f, &df, a, d0, eps);
+    imprimir_resultado(nome, p, eps);
+    return p;
 }
 
 int main()
@@ -65,17 +67,33 @@ int main()
     std::cout << "Precisao e (ex: 1e-4): ";
     if (!(std::cin >> eps) || eps <= 0) { std::cerr << "e invalido\n"; return 1; }
 
+    // Guarda o Payload de cada método para cada a (usado nos quadros)
+    std::vector<Execucao> execs;
+    const std::vector<std::string> metodos = {"newton_raphson()", "newton_modificado()", "secante()"};
+
     // ---- Execução dos métodos para cada a ----
     for (int i = 0; i < n; ++i)
     {
         double a = A[i];
         std::cout << "\n=== a = " << a << " ===";
 
-        executar("newton_raphson()",     newton_raphson,     a, d0, eps);
-        executar("newton_modificado()",  newton_modificado,  a, d0, eps);
+        Payload pnr = executar("newton_raphson()",    newton_raphson,    a, d0, eps);
+        Payload pnm = executar("newton_modificado()", newton_modificado, a, d0, eps);
+
         // Secante tem assinatura própria (precisa de d0 e d1), por isso é chamada à parte
-        imprimir_resultado("secante()", secante(&f, a, d0, d1, eps), eps);
+        Payload psc = secante(&f, a, d0, d1, eps);
+        imprimir_resultado("secante()", psc, eps);
+
+        // Registra os resultados deste a para os quadros
+        execs.push_back({metodos[0], a, pnr});
+        execs.push_back({metodos[1], a, pnm});
+        execs.push_back({metodos[2], a, psc});
     }
+
+    // ---- Itens e) e f): quadros e exportação CSV ----
+    quadro_resposta(execs, metodos, eps);
+    quadro_comparativo(execs, metodos, A, eps);
+    exportar_csv(execs, metodos, A, eps);
 
     return 0;
 }
