@@ -8,7 +8,7 @@ DIST     = Equipe_MN1_Tema2
 # onde a raiz cruza o limite de 0,7 cm
 VALORES_A = 12\n0.1\n0.5\n0.93\n0.95\n0.97\n0.98\n1\n1.5\n2\n3\n5\n10\n1e-4\n
 
-.PHONY: all static run clean dist csv graficos
+.PHONY: all static run clean dist csv graficos gui quadros-img
 
 # Build de desenvolvimento (dinâmico)
 all:
@@ -33,6 +33,17 @@ csv: all
 # Gráficos e quadros em imagem (precisa de python3 + matplotlib)
 graficos: csv
 	python3 scripts/graficos.py
+
+# Quadros resposta e comparativo em janelas (wxWidgets, como no exemplo da disciplina).
+# Programa separado e dinâmico: precisa de libwxgtk3.2-dev. Não afeta o bin/main estático.
+gui:
+	mkdir -p bin
+	$(CXX) -Isrc -std=c++17 -O2 -o bin/quadros_gui src/gui/quadros_gui.cpp `wx-config --cxxflags --libs core,base`
+
+# Imagens das janelas de quadros (precisa de xvfb, xdotool e imagemagick)
+quadros-img: gui
+	sh scripts/capturar_quadros.sh "1\n1\n1e-4\n" a1
+	sh scripts/capturar_quadros.sh "3\n0.5\n1\n2\n1e-4\n" varios_a
 
 clean:
 	rm -rf bin resultados/*.csv graficos/*.png $(DIST) $(DIST).zip

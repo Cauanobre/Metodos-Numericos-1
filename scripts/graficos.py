@@ -1,4 +1,4 @@
-"""Gráficos do item g) e quadros em imagem, a partir dos CSVs do programa.
+"""Gráficos do item g), a partir dos CSVs do programa.
 
 Uso (na raiz do projeto, depois de rodar o programa dentro de resultados/):
     python3 scripts/graficos.py
@@ -282,49 +282,6 @@ def grafico_limite(resposta, valores_perto):
     salvar(fig, "08_limite_seguranca.png")
 
 
-# ---------- 6) Quadros em imagem (estilo das janelas do exemplo) ----------
-def tabela(titulo, subtitulo, colunas, linhas, nome, rotulos_linha=None):
-    altura = 1.3 + 0.42 * len(linhas)
-    fig, ax = plt.subplots(figsize=(2.2 * (len(colunas) + (1 if rotulos_linha else 0)), altura))
-    ax.axis("off")
-    t = ax.table(cellText=linhas, colLabels=colunas, rowLabels=rotulos_linha,
-                 loc="center", cellLoc="left", rowLoc="left")
-    t.auto_set_font_size(False)
-    t.set_fontsize(11)
-    t.scale(1, 1.6)
-    for (lin, col), cel in t.get_celld().items():
-        cel.set_edgecolor(GRADE)
-        if lin == 0:
-            cel.set_facecolor("#efeeea")
-            cel.set_text_props(fontweight="bold", ha="center")
-        if col == -1:
-            cel.set_facecolor("#f6f5f2")
-    ax.set_title(titulo + "\n", fontsize=14, fontweight="bold")
-    fig.text(0.5, 0.86 if len(linhas) > 3 else 0.80, subtitulo, ha="center", color=TEXTO_2)
-    salvar(fig, nome)
-
-
-def quadros(iteracoes, resposta):
-    # quadro resposta: iterações de cada método para a = 1
-    for m, (nome, _) in METODOS.items():
-        linhas = [[r["k"], f"{float(r['d']):.8f}", f"{float(r['f(d)']):.3e}", f"{float(r['erro']):.3e}"]
-                  for r in iteracoes if r["metodo"] == m and float(r["a"]) == A_PADRAO]
-        arq = "06_quadro_resposta_" + m.strip("()") + ".png"
-        tabela("QUADRO RESPOSTA", f"{nome}  |  a = 1, d₀ = 0,5, ε = 10⁻⁴",
-               ["k", "dₖ", "f(dₖ)", "|dₖ − dₖ₋₁|"], linhas, arq)
-
-    # quadro comparativo: métodos lado a lado para a = 1
-    cols = [nome for nome, _ in METODOS.values()]
-    por_m = {r["metodo"]: r for r in resposta if float(r["a"]) == A_PADRAO}
-    ini = ["d₀ = 0,5", "d₀ = 0,5", "d₀ = 0,5; d₁ = 0,6"]
-    campos = [("d", "d"), ("f(d)", "f(d)"), ("Nº de iterações", "iteracoes"),
-              ("erro", "erro"), ("situação", "situacao")]
-    linhas = [ini] + [[por_m[m][c] for m in METODOS] for _, c in campos]
-    tabela("QUADRO COMPARATIVO", "a = 1, ε = 10⁻⁴", cols, linhas,
-           "07_quadro_comparativo_a1.png",
-           rotulos_linha=["Dados iniciais"] + [r for r, _ in campos])
-
-
 def main():
     os.makedirs(DIR_PNG, exist_ok=True)
     iteracoes = ler_csv("iteracoes.csv")
@@ -340,7 +297,6 @@ def main():
     grafico_funcao_varios_a(valores_a)
     if any(float(r["a"]) == A_PADRAO for r in iteracoes):
         grafico_convergencia(iteracoes)
-        quadros(iteracoes, resposta)
     grafico_iteracoes_por_a(resposta, valores_a)
     grafico_raiz_por_a(resposta, valores_a)
     if len(valores_perto) > 1:

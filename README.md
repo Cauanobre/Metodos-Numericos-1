@@ -25,14 +25,17 @@ f(d) = a·eᵈ − 4d², pelos métodos de Newton-Raphson, Newton modificado e S
 │   │   ├── constants.hpp    MAX_ITER, MAX_CM, TOL_DERIV, PASSO_SECANTE
 │   │   ├── functions.hpp    f(d) e f'(d)
 │   │   ├── payload.hpp      Epoch / Payload (registro das iterações)
-│   │   └── criterio.hpp     critério de parada e de convergência
+│   │   ├── criterio.hpp     critério de parada e de convergência
+│   │   └── entrada.hpp      leitura de números (aceita vírgula ou ponto)
 │   ├── metodos/             um arquivo por método (itens a, b, c)
 │   │   ├── newton_raphson.hpp
 │   │   ├── newton_modificado.hpp
 │   │   └── secante.hpp
-│   └── saida/
-│       └── quadros.hpp      quadro resposta, comparativo e CSV (itens e, f)
-├── scripts/                 scripts auxiliares (gráficos do item g)
+│   ├── saida/
+│   │   └── quadros.hpp      quadro resposta, comparativo e CSV (itens e, f)
+│   └── gui/
+│       └── quadros_gui.cpp  os mesmos quadros em janelas (wxWidgets)
+├── scripts/                 gráficos do item g) e captura das janelas de quadros
 ├── resultados/              CSVs gerados pelo programa (não versionados)
 ├── graficos/                imagens dos gráficos (não versionadas)
 ├── slides/                  apresentação final
@@ -47,6 +50,8 @@ make run        # compila e executa dentro de resultados/
 make csv        # roda o programa com vários valores de a e salva os CSVs em resultados/
 make graficos   # make csv + gera os gráficos em graficos/ (precisa de python3 + matplotlib)
 make static     # executável estático para entrega (g++ -static)
+make gui        # programa com os quadros em janelas, em bin/quadros_gui (precisa de libwxgtk3.2-dev)
+make quadros-img  # imagens das janelas de quadros em graficos/ (precisa de xvfb, xdotool e imagemagick)
 make dist       # gera Equipe_MN1_Tema2.zip: slides + código + executável estático
 make clean
 ```
@@ -70,6 +75,23 @@ Além das tabelas no terminal, o programa grava na pasta onde é executado:
 | `quadro_comparativo.csv` | métodos lado a lado para cada a (item f) |
 | `iteracoes.csv` | todas as iterações de cada método e a (base dos gráficos) |
 
+## Quadros em janelas (wxWidgets)
+
+`bin/quadros_gui` recebe a mesma entrada do `bin/main`, roda os mesmos métodos e mostra
+os quadros resposta e comparativo em duas janelas com tabelas, no formato usado em trabalhos
+anteriores da disciplina. É um programa separado e dinâmico, porque o wxWidgets depende do
+GTK, que não pode ser ligado de forma estática. Por isso o executável de entrega continua
+sendo o `bin/main` estático.
+
+```sh
+sudo apt install libwxgtk3.2-dev
+make gui
+./bin/quadros_gui
+```
+
+`make quadros-img` abre as janelas num display virtual e salva `quadro_resposta_*.png` e
+`quadro_comparativo_*.png` em `graficos/` (teste padrão e a = 0,5, 1 e 2).
+
 ## Gráficos e análise do item g)
 
 `make graficos` gera em `graficos/`:
@@ -82,7 +104,6 @@ Além das tabelas no terminal, o programa grava na pasta onde é executado:
 | `03_convergencia_a1.png` | erro por iteração de cada método (a = 1) |
 | `04_iteracoes_por_a.png` | iterações por valor de a (✕ = não convergiu) |
 | `05_raiz_por_a.png` | raiz encontrada por cada método, por a |
-| `06_quadro_resposta_*.png`, `07_quadro_comparativo_a1.png` | quadros em imagem |
 | `08_limite_seguranca.png` | valor crítico de a em que d chega a 0,7 cm |
 
 O valor crítico vem de f(0,7) = 0: a = 4·0,7² / e^0,7 ≈ 0,9733. Partindo de d₀ = 0,5,

@@ -8,6 +8,8 @@ do item g) em Python/Matplotlib.
   O `iteracoes.csv` tem uma linha por iteração (`metodo;a;k;d;f(d);erro`),
   útil para gráficos de erro × iteração.
 - Saída: imagens em `graficos/`.
+- `capturar_quadros.sh`: abre as janelas do `bin/quadros_gui` num display virtual e salva
+  um PNG de cada (usado por `make quadros-img`).
 
 Gerar tudo de uma vez (na raiz do projeto): `make graficos`.
 Precisa de `python3` com `matplotlib` (`pip install matplotlib`).

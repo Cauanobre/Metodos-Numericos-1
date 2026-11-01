@@ -5,3 +5,4 @@
 #define MAX_CM     0.7      // deslocamento crítico, acima disso o movimento amplifica
 #define TOL_DERIV  1e-12    // |f'(x0)| abaixo disso é tratado como zero
 #define PASSO_SECANTE 0.1   // segundo ponto inicial da secante: d1 = d0 + PASSO_SECANTE
+#define D0_PADRAO  0.5      // aproximação inicial padrão do enunciado

@@ -3,13 +3,12 @@
 #include <string>
 #include <cmath>
 #include <iomanip>
-#include <algorithm>
-#include <cstdlib>
 
 #include "core/constants.hpp"
 #include "core/functions.hpp"
 #include "core/payload.hpp"
 #include "core/criterio.hpp"
+#include "core/entrada.hpp"
 
 #include "metodos/newton_raphson.hpp"
 #include "metodos/newton_modificado.hpp"
@@ -18,18 +17,6 @@
 
 // Assinatura comum a Newton-Raphson e Newton modificado
 typedef Payload (*Metodo)(func, func, double, double, double);
-
-// Lê um número real aceitando vírgula ou ponto como separador decimal (ex: 0,0001 ou 1e-4)
-// Retorna false se o texto digitado não for um número completo
-bool ler_double(double& x)
-{
-    std::string s;
-    if (!(std::cin >> s)) return false;
-    std::replace(s.begin(), s.end(), ',', '.');
-    char* fim = nullptr;
-    x = std::strtod(s.c_str(), &fim);
-    return fim != s.c_str() && *fim == '\0';
-}
 
 // Imprime a tabela de iterações e o resumo de um Payload (usado por todos os métodos)
 void imprimir_resultado(const std::string& nome, const Payload& p, double eps)
@@ -66,7 +53,7 @@ Payload executar(const std::string& nome, Metodo metodo, double a, double d0, do
 
 int main()
 {
-    const double d0 = 0.5;                    // aproximação inicial padrão
+    const double d0 = D0_PADRAO;              // aproximação inicial padrão
     const double d1 = d0 + PASSO_SECANTE;     // segundo ponto da secante (usa 2 pontos iniciais)
     int n;
     double eps;
