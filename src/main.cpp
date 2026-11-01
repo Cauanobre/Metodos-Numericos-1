@@ -11,13 +11,14 @@
 #include "criterio.hpp"
 
 #include "newton_raphson.hpp"       
-#include "newton_modificado.hpp"     
+#include "newton_modificado.hpp"   
+#include "secante.hpp"                
 
-#include "newton_modificado.hpp"     // minha parte
-#include "secante.hpp"
+// Assinatura comum a todos os métodos
+typedef Payload (*Metodo)(func, func, double, double, double);
 
-// tabela de iteracoes e linha de resultado de um metodo
-void mostrar_metodo(const std::string& nome, const Payload& p, double eps)
+// Imprime a tabela de iterações e o resumo de um Payload (usado por todos os métodos)
+void imprimir_resultado(const std::string& nome, const Payload& p, double eps)
 {
     print_test_table(nome, p);
 
@@ -28,7 +29,7 @@ void mostrar_metodo(const std::string& nome, const Payload& p, double eps)
     }
 
     const Epoch& u = p.ultimo();
-    bool convergiu = std::abs(u.fd) <= eps;
+    bool convergiu = convergiu_payload(p, eps);
 
     std::cout << std::setprecision(8) << "Resultado: d = " << u.d << " | erro = " << u.erro
               << " | iteracoes = " << u.k << " | "
@@ -37,10 +38,16 @@ void mostrar_metodo(const std::string& nome, const Payload& p, double eps)
               << std::endl;
 }
 
+// Métodos que recebem (f, df, a, d0, eps): Newton-Raphson e Newton modificado
+void executar(const std::string& nome, Metodo metodo, double a, double d0, double eps)
+{
+    imprimir_resultado(nome, metodo(&f, &df, a, d0, eps), eps);
+}
+
 int main()
 {
-    const double d0 = 0.5;   // aproximação inicial padrão ( temos que calcular fazer o calculo pela teoria dos sinas ainda em)
-    const double d1 = d0 + 0.1;   // segundo ponto da secante, o enunciado nao define
+    const double d0 = 0.5;                    // aproximação inicial padrão
+    const double d1 = d0 + PASSO_SECANTE;     // segundo ponto da secante (usa 2 pontos iniciais)
     int n;
     double eps;
 
@@ -52,7 +59,7 @@ int main()
     for (int i = 0; i < n; ++i)
     {
         std::cout << "a[" << i + 1 << "]: ";
-        if (!(std::cin >> A[i]) || A[i] <= 0) { std::cerr << "a invalido (precisa ser maior que 0)\n"; return 1; }
+        if (!(std::cin >> A[i])) { std::cerr << "a invalido\n"; return 1; }
     }
 
     std::cout << "Precisao e (ex: 1e-4): ";
@@ -62,11 +69,12 @@ int main()
     for (int i = 0; i < n; ++i)
     {
         double a = A[i];
-
         std::cout << "\n=== a = " << a << " ===";
 
-        mostrar_metodo("newton_modificado()", newton_modificado(&f, &df, a, d0, eps), eps);
-        mostrar_metodo("secante()", secante(&f, a, d0, d1, eps), eps);
+        executar("newton_raphson()",     newton_raphson,     a, d0, eps);
+        executar("newton_modificado()",  newton_modificado,  a, d0, eps);
+        // Secante tem assinatura própria (precisa de d0 e d1), por isso é chamada à parte
+        imprimir_resultado("secante()", secante(&f, a, d0, d1, eps), eps);
     }
 
     return 0;

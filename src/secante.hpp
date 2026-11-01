@@ -3,17 +3,19 @@
 #include <iostream>
 #include "criterio.hpp"
 
-// Secante: d_(k+1) = d_k - f(d_k) * (d_k - d_(k-1)) / (f(d_k) - f(d_(k-1)))
-Payload secante(func f, func /*df*/, double a, double d0, double epsilon)
+
+// d_(k+1) = d_k - f(d_k) * (d_k - d_(k-1)) / (f(d_k) - f(d_(k-1)))
+
+Payload secante(func f, double a, double d0, double d1, double epsilon)
 {
     Payload p;
 
     double dant = d0;
-    double d = d0 + PASSO_SECANTE;
+    double d = d1;
     double fant = f(dant, a);
     double fd = f(d, a);
 
-
+    // se abs(f(x0)) < E1 então raiz <- x0; Fim  (registrado como iteração 0)
     if (std::abs(fant) < epsilon)
     {
         p.insert(Epoch(0, dant, fant, 0.0));
@@ -55,7 +57,7 @@ Payload secante(func f, func /*df*/, double a, double d0, double epsilon)
         double erro = std::abs(d - dant);
         p.insert(Epoch(k, d, fd, erro));
 
-        if (parou(fd, erro, epsilon)) return p;   // |f| < ε  ou  |d_k - d_(k-1)| < ε
+        if (parou(fd, erro, epsilon)) return p;   // |f| < E  ou  |d_k - d_(k-1)| < E
     }
 
     std::cerr << "secante(): nao convergiu em " << MAX_ITER << " iteracoes" << std::endl;
