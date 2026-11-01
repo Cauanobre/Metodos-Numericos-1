@@ -3,6 +3,8 @@
 #include <string>
 #include <cmath>
 #include <iomanip>
+#include <algorithm>
+#include <cstdlib>
 
 #include "core/constants.hpp"
 #include "core/functions.hpp"
@@ -16,6 +18,18 @@
 
 // Assinatura comum a Newton-Raphson e Newton modificado
 typedef Payload (*Metodo)(func, func, double, double, double);
+
+// Lê um número real aceitando vírgula ou ponto como separador decimal (ex: 0,0001 ou 1e-4)
+// Retorna false se o texto digitado não for um número completo
+bool ler_double(double& x)
+{
+    std::string s;
+    if (!(std::cin >> s)) return false;
+    std::replace(s.begin(), s.end(), ',', '.');
+    char* fim = nullptr;
+    x = std::strtod(s.c_str(), &fim);
+    return fim != s.c_str() && *fim == '\0';
+}
 
 // Imprime a tabela de iterações e o resumo de um Payload (usado por todos os métodos)
 void imprimir_resultado(const std::string& nome, const Payload& p, double eps)
@@ -61,11 +75,11 @@ int main()
     for (int i = 0; i < n; ++i)
     {
         std::cout << "a[" << i + 1 << "]: ";
-        if (!(std::cin >> A[i])) { std::cerr << "a invalido\n"; return 1; }
+        if (!ler_double(A[i])) { std::cerr << "a invalido\n"; return 1; }
     }
 
     std::cout << "Precisao e (ex: 1e-4): ";
-    if (!(std::cin >> eps) || eps <= 0) { std::cerr << "e invalido\n"; return 1; }
+    if (!ler_double(eps) || eps <= 0) { std::cerr << "e invalido\n"; return 1; }
 
     // Guarda o Payload de cada método para cada a (usado nos quadros)
     std::vector<Execucao> execs;
