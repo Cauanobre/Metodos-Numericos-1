@@ -16,3 +16,6 @@ Equipe_MN1_Tema2/
 # Python
 __pycache__/
 .venv/
+
+# Registro pessoal de atividades (fica so local)
+docs/registro-pessoa6.md
