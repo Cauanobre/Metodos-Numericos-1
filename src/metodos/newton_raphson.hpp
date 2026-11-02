@@ -40,7 +40,11 @@ Payload newton_raphson(func f, func df, double a, double d0, double epsilon)
         double erro = std::abs(x1 - x0);
         p.insert(Epoch(k, x1, f(x1, a), erro));          // escreva k, x1, f(x1)
 
-        if (parou(f(x1, a), erro, epsilon)) return p;     // abs(f(x1)) < E1 ou abs(x1-x0) < E2
+        if (parou(f(x1, a), erro, epsilon))               // abs(f(x1)) < E1 ou abs(x1-x0) < E2
+        {
+            registrar_parada(p, f(x1, a), epsilon);
+            return p;
+        }
 
         x0 = x1;
     }

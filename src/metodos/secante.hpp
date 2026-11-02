@@ -28,6 +28,7 @@ Payload secante(func f, double a, double d0, double d1, double epsilon)
     if (parou(fd, std::abs(d - dant), epsilon))
     {
         p.insert(Epoch(0, d, fd, std::abs(d - dant)));
+        registrar_parada(p, fd, epsilon);
         return p;
     }
 
@@ -58,7 +59,11 @@ Payload secante(func f, double a, double d0, double d1, double epsilon)
         double erro = std::abs(d - dant);
         p.insert(Epoch(k, d, fd, erro));
 
-        if (parou(fd, erro, epsilon)) return p;   // |f| < E  ou  |d_k - d_(k-1)| < E
+        if (parou(fd, erro, epsilon))   // |f| < E  ou  |d_k - d_(k-1)| < E
+        {
+            registrar_parada(p, fd, epsilon);
+            return p;
+        }
     }
 
     p.motivo = "nao convergiu em " + std::to_string(MAX_ITER) + " iteracoes";

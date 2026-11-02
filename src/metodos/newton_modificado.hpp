@@ -43,7 +43,11 @@ Payload newton_modificado(func f, func df, double a, double d0, double epsilon)
         double erro = std::abs(x1 - x0);
         p.insert(Epoch(k, x1, f(x1, a), erro));
 
-        if (parou(f(x1, a), erro, epsilon)) return p;
+        if (parou(f(x1, a), erro, epsilon))
+        {
+            registrar_parada(p, f(x1, a), epsilon);
+            return p;
+        }
 
         x0 = x1;
     }
