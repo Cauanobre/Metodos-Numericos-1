@@ -177,6 +177,7 @@ def grafico_iteracoes_por_a(resposta, valores_a):
     largura = 0.26
     teto = 0
     for j, (m, (nome, cor)) in enumerate(METODOS.items()):
+        rotulado = False   # a legenda vai na primeira barra desenhada do método
         for i, a in enumerate(valores_a):
             r = next(r for r in resposta if r["metodo"] == m and float(r["a"]) == a)
             x = i + (j - 1) * largura
@@ -186,7 +187,8 @@ def grafico_iteracoes_por_a(resposta, valores_a):
                 n = int(r["iteracoes"])
                 teto = max(teto, n)
                 ax.bar(x, n, largura * 0.92, color=cor, edgecolor=FUNDO, linewidth=2,
-                       label=nome if i == 0 else None)
+                       label=None if rotulado else nome)
+                rotulado = True
                 ax.text(x, n + 0.3, str(n), ha="center", fontsize=9, color=TEXTO_2)
     ax.plot([], [], "x", color=TEXTO_2, markersize=10, markeredgewidth=2, label="não convergiu")
     ax.set_xticks(range(len(valores_a)))
